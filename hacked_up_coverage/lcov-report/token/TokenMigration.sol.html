@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for token/TokenMigration.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">token/</a> TokenMigration.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/15</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/18</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity ^0.4.23;
+&nbsp;
+import "../../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../../../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "./OriginToken.sol";
+&nbsp;
+/**
+ * @title Migrates balances from one token contract to another
+ * @dev Migrates all balances from one token contract to another. Both contracts
+ * must be pausable (to prevent changes during migration), and the target
+ * contract must support minting tokens.
+ */
+contract TokenMigration is Ownable {
+  OriginToken public fromToken;
+  OriginToken public toToken;
+  mapping (address =&gt; bool) public migrated;
+  bool public finished;
+&nbsp;
+  event Migrated(address indexed account, uint256 balance);
+  event MigrationFinished();
+  
+<span class="fstat-no" title="function not covered" >  modifier notFinished() </span>{
+<span class="cstat-no" title="statement not covered" >    require(!finished, "migration already finished")</span>;
+    _;
+  }
+&nbsp;
+  // @dev Public constructor
+<span class="fstat-no" title="function not covered" >  constructor(OriginToken _fromToken, OriginToken _toToken) public </span>{
+<span class="cstat-no" title="statement not covered" >    owner = msg.sender</span>;
+<span class="cstat-no" title="statement not covered" >    fromToken = _fromToken</span>;
+<span class="cstat-no" title="statement not covered" >    toToken = _toToken</span>;
+  }
+&nbsp;
+  // @dev Migrates a set of accounts, which should be limited in size so that
+  // the transaction is under the gas limit.
+<span class="fstat-no" title="function not covered" >  function migrateAccounts(address[] _holders) public onlyOwner notFinished </span>{
+<span class="cstat-no" title="statement not covered" >    for (uint i = 0; i &lt; _holders.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >        migrateAccount(_holders[i])</span>;
+    }
+  }
+  
+  // @dev Migrates the balance for a single address by minting the same number
+  // of new tokens the address had with the old token.
+<span class="fstat-no" title="function not covered" >  function migrateAccount(address _holder) public onlyOwner notFinished </span>{
+<span class="cstat-no" title="statement not covered" >    require(!migrated[_holder], "holder already migrated")</span>;
+<span class="cstat-no" title="statement not covered" >    uint256 balance = fromToken.balanceOf(_holder)</span>;
+<span class="cstat-no" title="statement not covered" >    if (balance &gt; 0) {</span>
+      toToken.mint(_holder, balance);
+<span class="cstat-no" title="statement not covered" >      migrated[_holder] = true</span>;
+<span class="cstat-no" title="statement not covered" >      emit Migrated(_holder, balance);</span>
+    }
+  }
+  
+  // @dev Finishes migration and transfers token ownership to new owner.
+<span class="fstat-no" title="function not covered" >  function finish(address _newTokenOwner) public onlyOwner notFinished </span>{
+<span class="cstat-no" title="statement not covered" >    require(fromToken.totalSupply() == toToken.totalSupply(),</span>
+      "total token supplies do not match");
+<span class="cstat-no" title="statement not covered" >    require(_newTokenOwner != address(this),</span>
+      "this contract cannot own the token contract");
+<span class="cstat-no" title="statement not covered" >    finished = true</span>;
+    toToken.transferOwnership(_newTokenOwner);
+<span class="cstat-no" title="statement not covered" >    emit MigrationFinished();</span>
+  }
+  
+  // TODO: revisit whether we want to migrate approvals
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Aug 31 2018 09:35:42 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

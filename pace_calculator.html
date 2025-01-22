@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Walk Run Pace Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+    <script>
+        function calculateRunningPace() {
+            try {
+                // Get input values
+                const runningTime = parseFloat(document.getElementById('runningTime').value); // in seconds
+                const walkingTime = parseFloat(document.getElementById('walkingTime').value); // in seconds
+
+                const walkingPace = document.getElementById('walkingPace').value.split(':');
+                if (walkingPace.length !== 2) throw new Error("Invalid walking pace format. Use MM:SS.");
+                const walkingPaceMinutes = parseInt(walkingPace[0]);
+                const walkingPaceSeconds = parseInt(walkingPace[1]);
+                if (isNaN(walkingPaceMinutes) || isNaN(walkingPaceSeconds) || walkingPaceSeconds >= 60) {
+                    throw new Error("Invalid walking pace values. Use MM:SS with seconds less than 60.");
+                }
+
+                const desiredPace = document.getElementById('desiredPace').value.split(':');
+                if (desiredPace.length !== 2) throw new Error("Invalid desired pace format. Use MM:SS.");
+                const desiredPaceMinutes = parseInt(desiredPace[0]);
+                const desiredPaceSeconds = parseInt(desiredPace[1]);
+                if (isNaN(desiredPaceMinutes) || isNaN(desiredPaceSeconds) || desiredPaceSeconds >= 60) {
+                    throw new Error("Invalid desired pace values. Use MM:SS with seconds less than 60.");
+                }
+
+                if (isNaN(runningTime) || runningTime <= 0) throw new Error("Running time must be a positive number.");
+                if (isNaN(walkingTime) || walkingTime <= 0) throw new Error("Walking time must be a positive number.");
+
+                // Convert paces to seconds per mile
+                const walkingPaceSec = walkingPaceMinutes * 60 + walkingPaceSeconds;
+                const desiredPaceSec = desiredPaceMinutes * 60 + desiredPaceSeconds;
+
+                // Calculate total time in seconds
+                const totalTime = runningTime + walkingTime;
+
+                // Calculate total distance based on desired average pace
+                const totalDistance = totalTime / desiredPaceSec;
+
+                // Calculate walking distance based on walking time and pace
+                const walkingDistance = walkingTime / walkingPaceSec;
+
+                // Calculate running distance
+                const runningDistance = totalDistance - walkingDistance;
+
+                if (runningDistance <= 0) throw new Error("Invalid values: running distance cannot be zero or negative.");
+
+                // Calculate running pace in seconds per mile
+                const runningPaceSec = runningTime / runningDistance;
+
+                // Convert running pace to minutes and seconds per mile
+                const runningPaceMin = Math.floor(runningPaceSec / 60);
+                const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
+
+                // Display result
+                document.getElementById('result').textContent = `Required running pace: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile`;
+                document.getElementById('error').textContent = ""; // Clear error
+            } catch (e) {
+                document.getElementById('error').textContent = e.message;
+                document.getElementById('result').textContent = ""; // Clear result
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Run Walk Run Pace<br/>Calculator</h1>
+        <form onsubmit="event.preventDefault(); calculateRunningPace();">
+            <label for="runningTime">Running Time (seconds):</label>
+            <input type="number" id="runningTime" step="1" required>
+
+            <label for="walkingTime">Walking Time (seconds):</label>
+            <input type="number" id="walkingTime" step="1" required>
+
+            <label for="walkingPace">Walking Pace (MM:SS per mile):</label>
+            <input type="text" id="walkingPace" placeholder="MM:SS" required>
+
+            <label for="desiredPace">Desired Average Pace (MM:SS per mile):</label>
+            <input type="text" id="desiredPace" placeholder="MM:SS" required>
+
+            <button type="submit">Calculate</button>
+        </form>
+        <p id="error" class="error"></p>
+        <p id="result"></p>
+    </div>
+</body>
+</html>

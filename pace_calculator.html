@@ -110,11 +110,23 @@
                 // Calculate total distance based on desired average pace
                 const totalDistance = totalTime / desiredPaceSec;
 
+                // Calculate and display speeds in mph
+                const walkingSpeedMph = (3600 / walkingPaceSec).toFixed(2);
+                const desiredSpeedMph = (3600 / desiredPaceSec).toFixed(2);
+                document.getElementById('walkingPace').insertAdjacentHTML('afterend',
+                    `<div style="font-size: 14px; color: #666; margin-top: -5px;">${walkingSpeedMph} mph</div>`);
+                document.getElementById('desiredPace').insertAdjacentHTML('afterend',
+                    `<div style="font-size: 14px; color: #666; margin-top: -5px;">${desiredSpeedMph} mph</div>`);
+
                 // Calculate walking distance based on walking time and pace
                 const walkingDistance = walkingTime / walkingPaceSec;
 
                 // Calculate running distance
                 const runningDistance = totalDistance - walkingDistance;
+
+                // Add event listeners to pace inputs to append ":00" if no colon
+                const walkingPaceInput = document.getElementById('walkingPace');
+                const desiredPaceInput = document.getElementById('desiredPace');
 
                 if (runningDistance <= 0) throw new Error("Invalid values: running distance cannot be zero or negative.");
 
@@ -125,8 +137,11 @@
                 const runningPaceMin = Math.floor(runningPaceSec / 60);
                 const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
 
+                // Calculate speed in mph
+                const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
+
                 // Display result
-                document.getElementById('result').textContent = `Required running pace: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile`;
+                document.getElementById('result').innerHTML = `Required running pace: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile <br> Speed: ${runningSpeedMph} mph`;
                 document.getElementById('error').textContent = ""; // Clear error
             } catch (e) {
                 document.getElementById('error').textContent = e.message;
@@ -137,19 +152,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Run Walk Run Pace<br/>Calculator</h1>
+        <h1>Run Walk Run Pace Calculator</h1>
         <form onsubmit="event.preventDefault(); calculateRunningPace();">
             <label for="runningTime">Running Time (seconds):</label>
             <input type="number" id="runningTime" step="1" required>
 
             <label for="walkingTime">Walking Time (seconds):</label>
-            <input type="number" id="walkingTime" step="1" required>
+            <input type="number" id="walkingTime" step="1" required value="30">
 
             <label for="walkingPace">Walking Pace (MM:SS per mile):</label>
-            <input type="text" id="walkingPace" placeholder="MM:SS" required>
+            <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00" onblur="if(!this.value.includes(':')) this.value += ':00'">
 
             <label for="desiredPace">Desired Average Pace (MM:SS per mile):</label>
-            <input type="text" id="desiredPace" placeholder="MM:SS" required>
+            <input type="text" id="desiredPace" placeholder="MM:SS" required onblur="if(!this.value.includes(':')) this.value += ':00'">
 
             <button type="submit">Calculate</button>
         </form>

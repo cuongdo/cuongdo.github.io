@@ -75,9 +75,12 @@
 
         #result {
             margin-top: 20px;
-            font-size: 18px;
+            padding: 15px;
+            font-size: 16px;
             text-align: center;
-            font-weight: bold;
+            background: #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .error {
@@ -155,7 +158,41 @@
                 const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
 
                 // Display result
-                document.getElementById('result').innerHTML = `Required running pace: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile <br> Speed: ${runningSpeedMph} mph`;
+                let resultHtml = `Required running pace: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile <br> Speed: ${runningSpeedMph} mph`;
+
+                // Show paces for +/- 30s running times if running time >= 60s
+                if (runningTime >= 60) {
+                    // Calculate pace for -30s running time
+                    const shortRunTime = runningTime - 30;
+                    // Recalculate total time and distances for shorter run
+                    const shortTotalTime = shortRunTime + walkingTime;
+                    const shortTotalDistance = shortTotalTime / desiredPaceSec;
+                    const shortRunDistance = shortTotalDistance - walkingDistance;
+                    const shortRunPaceSec = shortRunTime / shortRunDistance;
+                    const shortRunPaceMin = Math.floor(shortRunPaceSec / 60);
+                    const shortRunPaceSecRemaining = Math.round(shortRunPaceSec % 60);
+                    const shortRunSpeedMph = (3600 / shortRunPaceSec).toFixed(2);
+
+                    // Calculate pace for +30s running time
+                    const longRunTime = runningTime + 30;
+                    // Recalculate total time and distances for longer run
+                    const longTotalTime = longRunTime + walkingTime;
+                    const longTotalDistance = longTotalTime / desiredPaceSec;
+                    const longRunDistance = longTotalDistance - walkingDistance;
+                    const longRunPaceSec = longRunTime / longRunDistance;
+                    const longRunPaceMin = Math.floor(longRunPaceSec / 60);
+                    const longRunPaceSecRemaining = Math.round(longRunPaceSec % 60);
+                    const longRunSpeedMph = (3600 / longRunPaceSec).toFixed(2);
+
+                    resultHtml += `<br><br>If running ${shortRunTime} seconds:<br>`;
+                    resultHtml += `Pace: ${shortRunPaceMin}:${shortRunPaceSecRemaining.toString().padStart(2, '0')} / mile <br>`;
+                    resultHtml += `Speed: ${shortRunSpeedMph} mph<br><br>`;
+                    resultHtml += `If running ${longRunTime} seconds:<br>`;
+                    resultHtml += `Pace: ${longRunPaceMin}:${longRunPaceSecRemaining.toString().padStart(2, '0')} / mile <br>`;
+                    resultHtml += `Speed: ${longRunSpeedMph} mph`;
+                }
+
+                document.getElementById('result').innerHTML = resultHtml;
                 document.getElementById('error').textContent = ""; // Clear error
             } catch (e) {
                 document.getElementById('error').textContent = e.message;
@@ -174,10 +211,10 @@
             <label for="walkingTime">Walking Time (seconds):</label>
             <input type="number" id="walkingTime" step="1" required value="30">
 
-            <label for="walkingPace">Walking Pace (MM:SS per mile):</label>
+            <label for="walkingPace">Walking Pace (MM:SS / mile):</label>
             <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00" onblur="if(!this.value.includes(':')) this.value += ':00'">
 
-            <label for="desiredPace">Desired Average Pace (MM:SS per mile):</label>
+            <label for="desiredPace">Desired Average Pace (MM:SS / mile):</label>
             <input type="text" id="desiredPace" placeholder="MM:SS" required onblur="if(!this.value.includes(':')) this.value += ':00'">
 
             <button type="submit">Calculate</button>

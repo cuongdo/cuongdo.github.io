@@ -123,11 +123,14 @@
 
                 // Calculate and display speeds in mph
                 const walkingSpeedMph = (3600 / walkingPaceSec).toFixed(2);
-                const desiredSpeedMph = (3600 / desiredPaceSec).toFixed(2);
+                document.getElementById('walkingSpeedDisplay')?.remove();
                 document.getElementById('walkingPace').insertAdjacentHTML('afterend',
-                    `<div style="font-size: 14px; color: #666; margin-top: -5px;">${walkingSpeedMph} mph</div>`);
+                    `<div id="walkingSpeedDisplay" style="font-size: 14px; color: #666; margin-top: -5px;">${walkingSpeedMph} mph</div>`);
+
+                const desiredSpeedMph = (3600 / desiredPaceSec).toFixed(2);
+                document.getElementById('desiredSpeedDisplay')?.remove();
                 document.getElementById('desiredPace').insertAdjacentHTML('afterend',
-                    `<div style="font-size: 14px; color: #666; margin-top: -5px;">${desiredSpeedMph} mph</div>`);
+                    `<div id="desiredSpeedDisplay" style="font-size: 14px; color: #666; margin-top: -5px;">${desiredSpeedMph} mph</div>`);
 
                 // Calculate walking distance based on walking time and pace
                 const walkingDistance = walkingTime / walkingPaceSec;

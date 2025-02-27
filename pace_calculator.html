@@ -34,7 +34,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
         }
 
         h1 {
@@ -74,11 +74,9 @@
         }
 
         #result {
-            margin-top: 20px;
-            padding: 15px;
+            padding: 10px;
             font-size: 16px;
             text-align: center;
-            background: #e9ecef;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             display: none; /* Hide by default */
@@ -93,7 +91,6 @@
         function calculateRunningPace() {
             try {
                 // Get input values
-                const runningTime = parseFloat(document.getElementById('runningTime').value); // in seconds
                 const walkingTime = parseFloat(document.getElementById('walkingTime').value); // in seconds
 
                 const walkingPace = document.getElementById('walkingPace').value.split(':');
@@ -112,20 +109,13 @@
                     throw new Error("Invalid desired pace values. Use MM:SS with seconds less than 60.");
                 }
 
-                if (isNaN(runningTime) || runningTime <= 0) throw new Error("Running time must be a positive number.");
                 if (isNaN(walkingTime) || walkingTime <= 0) throw new Error("Walking time must be a positive number.");
 
                 // Convert paces to seconds per mile
                 const walkingPaceSec = walkingPaceMinutes * 60 + walkingPaceSeconds;
                 const desiredPaceSec = desiredPaceMinutes * 60 + desiredPaceSeconds;
 
-                // Calculate total time in seconds
-                const totalTime = runningTime + walkingTime;
-
-                // Calculate total distance based on desired average pace
-                const totalDistance = totalTime / desiredPaceSec;
-
-                // Calculate and display speeds in mph
+                // Display speeds in mph
                 const walkingSpeedMph = (3600 / walkingPaceSec).toFixed(2);
                 document.getElementById('walkingSpeedDisplay')?.remove();
                 document.getElementById('walkingPace').insertAdjacentHTML('afterend',
@@ -136,68 +126,43 @@
                 document.getElementById('desiredPace').insertAdjacentHTML('afterend',
                     `<div id="desiredSpeedDisplay" style="font-size: 14px; color: #666; margin-top: -5px;">${desiredSpeedMph} mph</div>`);
 
-                // Calculate walking distance based on walking time and pace
-                const walkingDistance = walkingTime / walkingPaceSec;
+                // Generate table rows for different run/walk ratios
+                let tableHtml = `
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Run/Walk Ratio</th>
+                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Running Pace</th>
+                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Running Speed</th>
+                        </tr>`;
 
-                // Calculate running distance
-                const runningDistance = totalDistance - walkingDistance;
+                for (let ratio = 1; ratio <= 10; ratio++) {
+                    const runningTime = walkingTime * ratio;
+                    const totalTime = runningTime + walkingTime;
+                    const totalDistance = totalTime / desiredPaceSec;
+                    const walkingDistance = walkingTime / walkingPaceSec;
+                    const runningDistance = totalDistance - walkingDistance;
 
-                // Add event listeners to pace inputs to append ":00" if no colon
-                const walkingPaceInput = document.getElementById('walkingPace');
-                const desiredPaceInput = document.getElementById('desiredPace');
+                    if (runningDistance <= 0) continue;
 
-                if (runningDistance <= 0) throw new Error("Invalid values: running distance cannot be zero or negative.");
+                    const runningPaceSec = runningTime / runningDistance;
+                    const runningPaceMin = Math.floor(runningPaceSec / 60);
+                    const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
+                    const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
 
-                // Calculate running pace in seconds per mile
-                const runningPaceSec = runningTime / runningDistance;
-
-                // Convert running pace to minutes and seconds per mile
-                const runningPaceMin = Math.floor(runningPaceSec / 60);
-                const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
-
-                // Calculate speed in mph
-                const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
-
-                // Display result
-                let resultHtml = `Run pace for ${runningTime}/${walkingTime} RWR: ${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} per mile <br> Speed: ${runningSpeedMph} mph`;
-
-                // Show paces for +/- 30s running times if running time >= 60s
-                if (runningTime >= 60) {
-                    // Calculate pace for -30s running time
-                    const shortRunTime = runningTime - 30;
-                    // Recalculate total time and distances for shorter run
-                    const shortTotalTime = shortRunTime + walkingTime;
-                    const shortTotalDistance = shortTotalTime / desiredPaceSec;
-                    const shortRunDistance = shortTotalDistance - walkingDistance;
-                    const shortRunPaceSec = shortRunTime / shortRunDistance;
-                    const shortRunPaceMin = Math.floor(shortRunPaceSec / 60);
-                    const shortRunPaceSecRemaining = Math.round(shortRunPaceSec % 60);
-                    const shortRunSpeedMph = (3600 / shortRunPaceSec).toFixed(2);
-
-                    // Calculate pace for +30s running time
-                    const longRunTime = runningTime + 30;
-                    // Recalculate total time and distances for longer run
-                    const longTotalTime = longRunTime + walkingTime;
-                    const longTotalDistance = longTotalTime / desiredPaceSec;
-                    const longRunDistance = longTotalDistance - walkingDistance;
-                    const longRunPaceSec = longRunTime / longRunDistance;
-                    const longRunPaceMin = Math.floor(longRunPaceSec / 60);
-                    const longRunPaceSecRemaining = Math.round(longRunPaceSec % 60);
-                    const longRunSpeedMph = (3600 / longRunPaceSec).toFixed(2);
-
-                    resultHtml += `<br><br>If running ${shortRunTime} seconds:<br>`;
-                    resultHtml += `Pace: ${shortRunPaceMin}:${shortRunPaceSecRemaining.toString().padStart(2, '0')} / mile <br>`;
-                    resultHtml += `Speed: ${shortRunSpeedMph} mph<br><br>`;
-                    resultHtml += `If running ${longRunTime} seconds:<br>`;
-                    resultHtml += `Pace: ${longRunPaceMin}:${longRunPaceSecRemaining.toString().padStart(2, '0')} / mile <br>`;
-                    resultHtml += `Speed: ${longRunSpeedMph} mph`;
+                    tableHtml += `
+                        <tr style="background-color: #e8f5e9;">
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">${ratio}:1 (${runningTime}:${walkingTime})</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;"><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">${runningSpeedMph} mph</td>
+                        </tr>`;
                 }
 
-                document.getElementById('result').innerHTML = resultHtml;
-                document.getElementById('error').textContent = ""; // Clear error
+                tableHtml += '</table>';
+                document.getElementById('result').innerHTML = tableHtml;
+                document.getElementById('error').textContent = "";
             } catch (e) {
                 document.getElementById('error').textContent = e.message;
-                document.getElementById('result').textContent = ""; // Clear result
+                document.getElementById('result').textContent = "";
             }
         }
     </script>
@@ -206,9 +171,6 @@
     <div class="container">
         <h1>Run Walk Run<br/>Pace Calculator</h1>
         <form onsubmit="event.preventDefault(); calculateRunningPace();">
-            <label for="runningTime">Running Time (seconds):</label>
-            <input type="number" id="runningTime" step="1" required>
-
             <label for="walkingTime">Walking Time (seconds):</label>
             <input type="number" id="walkingTime" step="1" required value="30">
 

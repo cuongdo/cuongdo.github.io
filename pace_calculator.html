@@ -81,6 +81,7 @@
             background: #e9ecef;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: none; /* Hide by default */
         }
 
         .error {
@@ -217,7 +218,7 @@
             <label for="desiredPace">Desired Average Pace (MM:SS / mile):</label>
             <input type="text" id="desiredPace" placeholder="MM:SS" required onblur="if(!this.value.includes(':')) this.value += ':00'">
 
-            <button type="submit">Calculate</button>
+            <button type="submit" onclick="document.getElementById('result').style.display='block'">Calculate</button>
         </form>
         <p id="error" class="error"></p>
         <p id="result"></p>

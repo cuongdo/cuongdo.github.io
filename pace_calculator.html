@@ -108,7 +108,7 @@
         form {
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 18px;
         }
 
         label {
@@ -212,7 +212,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            margin-bottom: -15px;
+            margin-bottom: 0;
         }
 
         .speed-display {
@@ -294,7 +294,9 @@
 
         <form id="calculator-form">
             <label for="walkingTime">Walking Time (seconds):</label>
-            <input type="number" id="walkingTime" step="1" required value="30">
+            <div class="input-group">
+                <input type="number" id="walkingTime" step="1" required value="30">
+            </div>
 
             <label for="walkingPace">Walking Pace (MM:SS / mile):</label>
             <div class="input-group">

@@ -14,18 +14,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
+            padding-bottom: 60px; /* Add padding to prevent overlap */
         }
 
         body::after {
             content: "CD";
-            position: absolute;
+            position: fixed; /* Change from absolute to fixed */
             bottom: 20px;
             right: 20px;
             font-family: 'Brush Script MT', cursive;
             font-size: 24px;
             color: #333;
+            z-index: 1000; /* Ensure it stays on top */
         }
 
         .container {

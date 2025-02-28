@@ -8,12 +8,13 @@
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #007bff 0%, #ffffff 100%);
+            background-attachment: fixed;
             color: #333;
             margin: 0;
-            padding: 20px 0; /* Changed from padding-bottom only */
+            padding: 20px 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             position: relative;
         }
@@ -36,9 +37,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
-            max-height: 80vh; /* Limit height */
-            overflow-y: auto; /* Make scrollable */
-            margin: 20px; /* Add margin to prevent touching edges */
+            max-height: none;
+            overflow-y: visible;
+            margin: 20px;
         }
 
         h1 {

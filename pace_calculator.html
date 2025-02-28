@@ -158,20 +158,56 @@
     </div>
 
     <script>
+        // Store original input values
+        const originalValues = {
+            walkingTime: '',
+            walkingPace: '',
+            desiredPace: ''
+        };
+        
+        // LocalStorage key
+        const STORAGE_KEY = 'runWalkRunCalcValues';
+        
+        // Load saved values from localStorage on page load
+        document.addEventListener('DOMContentLoaded', loadSavedValues);
+        
         // Format MM:SS pace inputs
         document.querySelectorAll('input[placeholder="MM:SS"]').forEach(input => {
             input.addEventListener('blur', () => {
                 if (!input.value.includes(':')) {
                     input.value += ':00';
                 }
+                saveToLocalStorage(); // Save when format is applied
             });
         });
+        
+        // Add input change listeners
+        document.querySelectorAll('#calculator-form input').forEach(input => {
+            input.addEventListener('input', () => {
+                checkForChanges();
+                saveToLocalStorage(); // Save whenever input changes
+            });
+        });
+
+        // Track if calculation has been performed
+        let calculationPerformed = false;
+        const submitButton = document.querySelector('#calculator-form button[type="submit"]');
 
         // Form submission handler
         document.getElementById('calculator-form').addEventListener('submit', (event) => {
             event.preventDefault();
             document.getElementById('result').style.display = 'block';
             calculateRunningPace();
+            
+            // Set calculation flag and store original input values
+            calculationPerformed = true;
+            storeInputValues();
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Change button text to "Calculate" initially
+            submitButton.textContent = "Calculate";
         });
 
         /**
@@ -290,6 +326,81 @@
 
             tableHtml += '</table>';
             document.getElementById('result').innerHTML = tableHtml;
+        }
+        
+        /**
+         * Stores the current input values after calculation
+         */
+        function storeInputValues() {
+            originalValues.walkingTime = document.getElementById('walkingTime').value;
+            originalValues.walkingPace = document.getElementById('walkingPace').value;
+            originalValues.desiredPace = document.getElementById('desiredPace').value;
+        }
+        
+        /**
+         * Checks if any input values have changed since last calculation
+         */
+        function checkForChanges() {
+            if (!calculationPerformed) return;
+            
+            const currentWalkingTime = document.getElementById('walkingTime').value;
+            const currentWalkingPace = document.getElementById('walkingPace').value;
+            const currentDesiredPace = document.getElementById('desiredPace').value;
+            
+            const hasChanged = 
+                currentWalkingTime !== originalValues.walkingTime || 
+                currentWalkingPace !== originalValues.walkingPace || 
+                currentDesiredPace !== originalValues.desiredPace;
+                
+            // Update button text based on whether inputs have changed
+            submitButton.textContent = hasChanged ? "Recalculate" : "Calculate";
+        }
+        
+        /**
+         * Saves current input values to localStorage
+         */
+        function saveToLocalStorage() {
+            try {
+                const values = {
+                    walkingTime: document.getElementById('walkingTime').value,
+                    walkingPace: document.getElementById('walkingPace').value,
+                    desiredPace: document.getElementById('desiredPace').value
+                };
+                
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                // Silently fail - localStorage might be disabled or full
+            }
+        }
+        
+        /**
+         * Loads saved values from localStorage
+         */
+        function loadSavedValues() {
+            try {
+                const savedValues = localStorage.getItem(STORAGE_KEY);
+                
+                if (savedValues) {
+                    const values = JSON.parse(savedValues);
+                    
+                    // Apply saved values to form inputs
+                    if (values.walkingTime) {
+                        document.getElementById('walkingTime').value = values.walkingTime;
+                    }
+                    
+                    if (values.walkingPace) {
+                        document.getElementById('walkingPace').value = values.walkingPace;
+                    }
+                    
+                    if (values.desiredPace) {
+                        document.getElementById('desiredPace').value = values.desiredPace;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                // Silently fail - localStorage might be disabled or contain invalid data
+            }
         }
     </script>
 </body>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Run Walk Run Pace Calculator</title>
     <style>
         /* Global styles */
@@ -227,14 +227,21 @@
         }
 
         /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            background: white;
+        }
+        
         table {
             width: 100%;
+            min-width: 300px;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 25px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-            border-radius: 12px;
-            overflow: hidden;
             background: white;
         }
 
@@ -260,10 +267,18 @@
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 10px;
             border: none;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 480px) {
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.95em;
+            }
         }
 
         td {
@@ -274,6 +289,12 @@
             color: var(--primary-dark);
             font-size: 17px;
         }
+        
+        @media (max-width: 480px) {
+            td b {
+                font-size: 15px;
+            }
+        }
 
         th {
             color: white;
@@ -283,6 +304,13 @@
             letter-spacing: 1px;
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
             border: none;
+        }
+        
+        @media (max-width: 480px) {
+            th {
+                font-size: 13px;
+                letter-spacing: 0.5px;
+            }
         }
     </style>
 </head>
@@ -457,12 +485,13 @@
          */
         function generatePaceTable(walkingTime, walkingPaceSec, desiredPaceSec) {
             let tableHtml = `
-                <table>
-                    <tr class="header-row">
-                        <th>Run/Walk Ratio</th>
-                        <th>Running Pace</th>
-                        <th>Running Speed</th>
-                    </tr>`;
+                <div class="table-container">
+                    <table>
+                        <tr class="header-row">
+                            <th>Run/Walk Ratio</th>
+                            <th>Running Pace</th>
+                            <th>Running Speed</th>
+                        </tr>`;
 
             for (let ratio = 1; ratio <= 10; ratio++) {
                 const runningTime = walkingTime * ratio;
@@ -481,12 +510,12 @@
                 tableHtml += `
                     <tr class="data-row">
                         <td>${ratio}:1 (${runningTime}:${walkingTime})</td>
-                        <td><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
+                        <td><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')}</b></td>
                         <td>${runningSpeedMph} mph</td>
                     </tr>`;
             }
 
-            tableHtml += '</table>';
+            tableHtml += '</table></div>';
             document.getElementById('result').innerHTML = tableHtml;
         }
 

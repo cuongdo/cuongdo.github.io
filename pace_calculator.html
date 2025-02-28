@@ -91,6 +91,37 @@
             color: red;
             font-size: 14px;
         }
+
+        /* Speed display styles */
+        .speed-display {
+            font-size: 14px;
+            color: #666;
+            margin-top: -5px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        tr.header-row {
+            background-color: #f8f9fa;
+        }
+
+        tr.data-row {
+            background-color: #e8f5e9;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #c8e6c9;
+        }
     </style>
     <script>
         function calculateRunningPace() {
@@ -124,20 +155,20 @@
                 const walkingSpeedMph = (3600 / walkingPaceSec).toFixed(2);
                 document.getElementById('walkingSpeedDisplay')?.remove();
                 document.getElementById('walkingPace').insertAdjacentHTML('afterend',
-                    `<div id="walkingSpeedDisplay" style="font-size: 14px; color: #666; margin-top: -5px;">${walkingSpeedMph} mph</div>`);
+                    `<div id="walkingSpeedDisplay" class="speed-display">${walkingSpeedMph} mph</div>`);
 
                 const desiredSpeedMph = (3600 / desiredPaceSec).toFixed(2);
                 document.getElementById('desiredSpeedDisplay')?.remove();
                 document.getElementById('desiredPace').insertAdjacentHTML('afterend',
-                    `<div id="desiredSpeedDisplay" style="font-size: 14px; color: #666; margin-top: -5px;">${desiredSpeedMph} mph</div>`);
+                    `<div id="desiredSpeedDisplay" class="speed-display">${desiredSpeedMph} mph</div>`);
 
                 // Generate table rows for different run/walk ratios
                 let tableHtml = `
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <tr style="background-color: #f8f9fa;">
-                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Run/Walk Ratio</th>
-                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Running Pace</th>
-                            <th style="padding: 8px; border: 1px solid #dee2e6; background-color: #c8e6c9;">Running Speed</th>
+                    <table>
+                        <tr class="header-row">
+                            <th>Run/Walk Ratio</th>
+                            <th>Running Pace</th>
+                            <th>Running Speed</th>
                         </tr>`;
 
                 for (let ratio = 1; ratio <= 10; ratio++) {
@@ -155,10 +186,10 @@
                     const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
 
                     tableHtml += `
-                        <tr style="background-color: #e8f5e9;">
-                            <td style="padding: 8px; border: 1px solid #dee2e6;">${ratio}:1 (${runningTime}:${walkingTime})</td>
-                            <td style="padding: 8px; border: 1px solid #dee2e6;"><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
-                            <td style="padding: 8px; border: 1px solid #dee2e6;">${runningSpeedMph} mph</td>
+                        <tr class="data-row">
+                            <td>${ratio}:1 (${runningTime}:${walkingTime})</td>
+                            <td><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
+                            <td>${runningSpeedMph} mph</td>
                         </tr>`;
                 }
 

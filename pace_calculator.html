@@ -138,7 +138,6 @@
             transition: all 0.3s ease;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-
         input:focus {
             outline: none;
             border-color: var(--accent-color);
@@ -208,12 +207,23 @@
             margin-top: 8px;
         }
 
-        /* Speed display styles */
+        /* Input group and speed display styles */
+        .input-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: -15px;
+        }
+        
         .speed-display {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--muted-text);
-            margin-top: -5px;
+            margin-top: 2px;
+            text-align: right;
+            padding-right: 6px;
             opacity: 0.9;
+            font-weight: 500;
+            font-style: italic;
         }
 
         /* Table styles */
@@ -284,10 +294,16 @@
             <input type="number" id="walkingTime" step="1" required value="30">
 
             <label for="walkingPace">Walking Pace (MM:SS / mile):</label>
-            <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00">
+            <div class="input-group">
+                <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00">
+                <div id="walkingSpeedDisplay" class="speed-display" style="display: none;"></div>
+            </div>
 
             <label for="desiredPace">Desired Average Pace (MM:SS / mile):</label>
-            <input type="text" id="desiredPace" placeholder="MM:SS" required>
+            <div class="input-group">
+                <input type="text" id="desiredPace" placeholder="MM:SS" required>
+                <div id="desiredSpeedDisplay" class="speed-display" style="display: none;"></div>
+            </div>
 
             <button type="submit">Calculate</button>
         </form>
@@ -420,9 +436,12 @@
          */
         function displaySpeed(inputId, displayId, paceInSeconds) {
             const speedMph = (3600 / paceInSeconds).toFixed(2);
-            document.getElementById(displayId)?.remove();
-            document.getElementById(inputId).insertAdjacentHTML('afterend',
-                `<div id="${displayId}" class="speed-display">${speedMph} mph</div>`);
+            const speedDisplay = document.getElementById(displayId);
+            
+            if (speedDisplay) {
+                speedDisplay.textContent = `${speedMph} mph`;
+                speedDisplay.style.display = "block";
+            }
         }
 
         /**

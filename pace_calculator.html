@@ -5,11 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Run Walk Run Pace Calculator</title>
     <style>
+        /* Global styles */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --text-color: #333;
+            --light-gray: #ccc;
+            --light-bg: #f8f9fa;
+            --success-bg: #e8f5e9;
+            --success-header: #c8e6c9;
+            --border-color: #dee2e6;
+        }
+        
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #007bff 0%, #ffffff 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #ffffff 100%);
             background-attachment: fixed;
-            color: #333;
+            color: var(--text-color);
             margin: 0;
             padding: 20px 0;
             display: flex;
@@ -26,10 +38,11 @@
             right: 20px;
             font-family: 'Brush Script MT', cursive;
             font-size: 24px;
-            color: #333;
+            color: var(--text-color);
             z-index: 1000;
         }
 
+        /* Container and layout */
         .container {
             background: #fff;
             padding: 20px 30px;
@@ -37,8 +50,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
-            max-height: none;
-            overflow-y: visible;
             margin: 20px;
         }
 
@@ -47,6 +58,7 @@
             color: #222;
         }
 
+        /* Form elements */
         form {
             display: flex;
             flex-direction: column;
@@ -60,7 +72,7 @@
         input {
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--light-gray);
             border-radius: 4px;
         }
 
@@ -68,16 +80,18 @@
             padding: 10px;
             font-size: 16px;
             color: #fff;
-            background-color: #007bff;
+            background-color: var(--primary-color);
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: var(--primary-dark);
         }
 
+        /* Results section */
         #result {
             padding: 10px;
             font-size: 16px;
@@ -107,119 +121,176 @@
         }
 
         tr.header-row {
-            background-color: #f8f9fa;
+            background-color: var(--light-bg);
         }
 
         tr.data-row {
-            background-color: #e8f5e9;
+            background-color: var(--success-bg);
         }
 
         th, td {
             padding: 8px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--border-color);
         }
 
         th {
-            background-color: #c8e6c9;
+            background-color: var(--success-header);
         }
     </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Run Walk Run<br>Pace Calculator</h1>
+        <form id="calculator-form">
+            <label for="walkingTime">Walking Time (seconds):</label>
+            <input type="number" id="walkingTime" step="1" required value="30">
+
+            <label for="walkingPace">Walking Pace (MM:SS / mile):</label>
+            <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00">
+
+            <label for="desiredPace">Desired Average Pace (MM:SS / mile):</label>
+            <input type="text" id="desiredPace" placeholder="MM:SS" required>
+
+            <button type="submit">Calculate</button>
+        </form>
+        <p id="error" class="error"></p>
+        <div id="result"></div>
+    </div>
+
     <script>
+        // Format MM:SS pace inputs
+        document.querySelectorAll('input[placeholder="MM:SS"]').forEach(input => {
+            input.addEventListener('blur', () => {
+                if (!input.value.includes(':')) {
+                    input.value += ':00';
+                }
+            });
+        });
+
+        // Form submission handler
+        document.getElementById('calculator-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            document.getElementById('result').style.display = 'block';
+            calculateRunningPace();
+        });
+
+        /**
+         * Calculates running pace based on walking time, walking pace, and desired average pace
+         */
         function calculateRunningPace() {
             try {
                 // Get input values
-                const walkingTime = parseFloat(document.getElementById('walkingTime').value); // in seconds
-
-                const walkingPace = document.getElementById('walkingPace').value.split(':');
-                if (walkingPace.length !== 2) throw new Error("Invalid walking pace format. Use MM:SS.");
-                const walkingPaceMinutes = parseInt(walkingPace[0]);
-                const walkingPaceSeconds = parseInt(walkingPace[1]);
-                if (isNaN(walkingPaceMinutes) || isNaN(walkingPaceSeconds) || walkingPaceSeconds >= 60) {
-                    throw new Error("Invalid walking pace values. Use MM:SS with seconds less than 60.");
+                const walkingTime = parseFloat(document.getElementById('walkingTime').value);
+                const walkingPaceParts = parsePaceInput('walkingPace');
+                const desiredPaceParts = parsePaceInput('desiredPace');
+                
+                if (isNaN(walkingTime) || walkingTime <= 0) {
+                    throw new Error("Walking time must be a positive number.");
                 }
-
-                const desiredPace = document.getElementById('desiredPace').value.split(':');
-                if (desiredPace.length !== 2) throw new Error("Invalid desired pace format. Use MM:SS.");
-                const desiredPaceMinutes = parseInt(desiredPace[0]);
-                const desiredPaceSeconds = parseInt(desiredPace[1]);
-                if (isNaN(desiredPaceMinutes) || isNaN(desiredPaceSeconds) || desiredPaceSeconds >= 60) {
-                    throw new Error("Invalid desired pace values. Use MM:SS with seconds less than 60.");
-                }
-
-                if (isNaN(walkingTime) || walkingTime <= 0) throw new Error("Walking time must be a positive number.");
 
                 // Convert paces to seconds per mile
-                const walkingPaceSec = walkingPaceMinutes * 60 + walkingPaceSeconds;
-                const desiredPaceSec = desiredPaceMinutes * 60 + desiredPaceSeconds;
+                const walkingPaceSec = convertToSeconds(walkingPaceParts);
+                const desiredPaceSec = convertToSeconds(desiredPaceParts);
 
                 // Display speeds in mph
-                const walkingSpeedMph = (3600 / walkingPaceSec).toFixed(2);
-                document.getElementById('walkingSpeedDisplay')?.remove();
-                document.getElementById('walkingPace').insertAdjacentHTML('afterend',
-                    `<div id="walkingSpeedDisplay" class="speed-display">${walkingSpeedMph} mph</div>`);
+                displaySpeed('walkingPace', 'walkingSpeedDisplay', walkingPaceSec);
+                displaySpeed('desiredPace', 'desiredSpeedDisplay', desiredPaceSec);
 
-                const desiredSpeedMph = (3600 / desiredPaceSec).toFixed(2);
-                document.getElementById('desiredSpeedDisplay')?.remove();
-                document.getElementById('desiredPace').insertAdjacentHTML('afterend',
-                    `<div id="desiredSpeedDisplay" class="speed-display">${desiredSpeedMph} mph</div>`);
-
-                // Generate table rows for different run/walk ratios
-                let tableHtml = `
-                    <table>
-                        <tr class="header-row">
-                            <th>Run/Walk Ratio</th>
-                            <th>Running Pace</th>
-                            <th>Running Speed</th>
-                        </tr>`;
-
-                for (let ratio = 1; ratio <= 10; ratio++) {
-                    const runningTime = walkingTime * ratio;
-                    const totalTime = runningTime + walkingTime;
-                    const totalDistance = totalTime / desiredPaceSec;
-                    const walkingDistance = walkingTime / walkingPaceSec;
-                    const runningDistance = totalDistance - walkingDistance;
-
-                    if (runningDistance <= 0) continue;
-
-                    const runningPaceSec = runningTime / runningDistance;
-                    const runningPaceMin = Math.floor(runningPaceSec / 60);
-                    const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
-                    const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
-
-                    tableHtml += `
-                        <tr class="data-row">
-                            <td>${ratio}:1 (${runningTime}:${walkingTime})</td>
-                            <td><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
-                            <td>${runningSpeedMph} mph</td>
-                        </tr>`;
-                }
-
-                tableHtml += '</table>';
-                document.getElementById('result').innerHTML = tableHtml;
+                // Generate pace table
+                generatePaceTable(walkingTime, walkingPaceSec, desiredPaceSec);
+                
+                // Clear any previous errors
                 document.getElementById('error').textContent = "";
             } catch (e) {
                 document.getElementById('error').textContent = e.message;
                 document.getElementById('result').textContent = "";
             }
         }
+
+        /**
+         * Parses a pace input field (MM:SS format)
+         * @param {string} elementId - The ID of the input element
+         * @returns {Object} - Object with minutes and seconds properties
+         */
+        function parsePaceInput(elementId) {
+            const paceParts = document.getElementById(elementId).value.split(':');
+            
+            if (paceParts.length !== 2) {
+                throw new Error(`Invalid ${elementId} format. Use MM:SS.`);
+            }
+            
+            const minutes = parseInt(paceParts[0]);
+            const seconds = parseInt(paceParts[1]);
+            
+            if (isNaN(minutes) || isNaN(seconds) || seconds >= 60) {
+                throw new Error(`Invalid ${elementId} values. Use MM:SS with seconds less than 60.`);
+            }
+            
+            return { minutes, seconds };
+        }
+
+        /**
+         * Converts pace parts to total seconds
+         * @param {Object} paceParts - Object with minutes and seconds properties
+         * @returns {number} - Total seconds
+         */
+        function convertToSeconds(paceParts) {
+            return paceParts.minutes * 60 + paceParts.seconds;
+        }
+
+        /**
+         * Displays speed in mph next to pace input
+         * @param {string} inputId - ID of the pace input
+         * @param {string} displayId - ID for the speed display element
+         * @param {number} paceInSeconds - Pace in seconds per mile
+         */
+        function displaySpeed(inputId, displayId, paceInSeconds) {
+            const speedMph = (3600 / paceInSeconds).toFixed(2);
+            document.getElementById(displayId)?.remove();
+            document.getElementById(inputId).insertAdjacentHTML('afterend',
+                `<div id="${displayId}" class="speed-display">${speedMph} mph</div>`);
+        }
+
+        /**
+         * Generates the pace table for different run/walk ratios
+         * @param {number} walkingTime - Walking time in seconds
+         * @param {number} walkingPaceSec - Walking pace in seconds per mile
+         * @param {number} desiredPaceSec - Desired average pace in seconds per mile
+         */
+        function generatePaceTable(walkingTime, walkingPaceSec, desiredPaceSec) {
+            let tableHtml = `
+                <table>
+                    <tr class="header-row">
+                        <th>Run/Walk Ratio</th>
+                        <th>Running Pace</th>
+                        <th>Running Speed</th>
+                    </tr>`;
+
+            for (let ratio = 1; ratio <= 10; ratio++) {
+                const runningTime = walkingTime * ratio;
+                const totalTime = runningTime + walkingTime;
+                const totalDistance = totalTime / desiredPaceSec;
+                const walkingDistance = walkingTime / walkingPaceSec;
+                const runningDistance = totalDistance - walkingDistance;
+
+                if (runningDistance <= 0) continue;
+
+                const runningPaceSec = runningTime / runningDistance;
+                const runningPaceMin = Math.floor(runningPaceSec / 60);
+                const runningPaceSecRemaining = Math.round(runningPaceSec % 60);
+                const runningSpeedMph = (3600 / runningPaceSec).toFixed(2);
+
+                tableHtml += `
+                    <tr class="data-row">
+                        <td>${ratio}:1 (${runningTime}:${walkingTime})</td>
+                        <td><b>${runningPaceMin}:${runningPaceSecRemaining.toString().padStart(2, '0')} / mile</b></td>
+                        <td>${runningSpeedMph} mph</td>
+                    </tr>`;
+            }
+
+            tableHtml += '</table>';
+            document.getElementById('result').innerHTML = tableHtml;
+        }
     </script>
-</head>
-<body>
-    <div class="container">
-        <h1>Run Walk Run<br/>Pace Calculator</h1>
-        <form onsubmit="event.preventDefault(); calculateRunningPace();">
-            <label for="walkingTime">Walking Time (seconds):</label>
-            <input type="number" id="walkingTime" step="1" required value="30">
-
-            <label for="walkingPace">Walking Pace (MM:SS / mile):</label>
-            <input type="text" id="walkingPace" placeholder="MM:SS" required value="18:00" onblur="if(!this.value.includes(':')) this.value += ':00'">
-
-            <label for="desiredPace">Desired Average Pace (MM:SS / mile):</label>
-            <input type="text" id="desiredPace" placeholder="MM:SS" required onblur="if(!this.value.includes(':')) this.value += ':00'">
-
-            <button type="submit" onclick="document.getElementById('result').style.display='block'">Calculate</button>
-        </form>
-        <p id="error" class="error"></p>
-        <p id="result"></p>
-    </div>
 </body>
 </html>

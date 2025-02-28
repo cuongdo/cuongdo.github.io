@@ -10,24 +10,23 @@
             background: linear-gradient(135deg, #007bff 0%, #ffffff 100%);
             color: #333;
             margin: 0;
-            padding: 0;
+            padding: 20px 0; /* Changed from padding-bottom only */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             position: relative;
-            padding-bottom: 60px; /* Add padding to prevent overlap */
         }
 
         body::after {
             content: "CD";
-            position: fixed; /* Change from absolute to fixed */
+            position: fixed;
             bottom: 20px;
             right: 20px;
             font-family: 'Brush Script MT', cursive;
             font-size: 24px;
             color: #333;
-            z-index: 1000; /* Ensure it stays on top */
+            z-index: 1000;
         }
 
         .container {
@@ -37,6 +36,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
+            max-height: 80vh; /* Limit height */
+            overflow-y: auto; /* Make scrollable */
+            margin: 20px; /* Add margin to prevent touching edges */
         }
 
         h1 {
